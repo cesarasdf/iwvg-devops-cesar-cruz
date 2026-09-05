@@ -57,7 +57,7 @@ jobs:
       - name: 📊 Sonar Analysis
         run: >
           mvn -B sonar:sonar
-          -Dsonar.projectKey=${{ env.ORGANIZATION }}_${{ env.ARTIFACT }}
-          -Dsonar.organization=${{ env.ORGANIZATION }}
+          -Dsonar.projectKey=cesar-cruz-upm_${{ env.ARTIFACT }}
+          -Dsonar.organization=cesar-cruz-upm
           -Dsonar.host.url=https://sonarcloud.io 
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}

@@ -3,6 +3,7 @@ package es.upm.miw.devops.rest;
 import es.upm.miw.devops.code.User;
 import es.upm.miw.devops.code.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,5 +32,10 @@ public class UserController {
                                    @RequestParam(required = false) String familyName,
                                    @RequestParam(required = false) Boolean billable) {
         return this.userService.findByFilter(name, familyName, billable);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable String id) {
+        this.userService.deleteById(id);
     }
 }

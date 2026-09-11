@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -124,6 +125,36 @@ class UserControllerTest {
     void testDeleteByIdNotFound() {
         this.webTestClient.delete()
                 .uri(USERS + "/999")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testUpdateActive() {
+        this.webTestClient.put()
+                .uri(USERS + "/1/active")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(false)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1")
+                .jsonPath("$.active").isEqualTo(false);
+        this.webTestClient.get()
+                .uri(USERS + "/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.active").isEqualTo(false);
+    }
+
+    @Test
+    void testUpdateActiveNotFound() {
+        this.webTestClient.put()
+                .uri(USERS + "/999/active")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(false)
                 .exchange()
                 .expectStatus().isNotFound();
     }

@@ -14,10 +14,12 @@ public class User {
     private String city;
     private String province;
     private String postalCode;
+    private boolean active;
     private List<Fraction> fractions;
 
     public User() {
         this.fractions = new ArrayList<>();
+        this.active = true;
     }
 
     public User(String id, String name, String familyName, List<Fraction> fractions) {
@@ -25,6 +27,7 @@ public class User {
         this.name = name;
         this.familyName = familyName;
         this.fractions = fractions;
+        this.active = true;
     }
 
     public User(String id, String name, String familyName, String email, String identity, String address, String city,
@@ -108,6 +111,14 @@ public class User {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public boolean isBillable() {

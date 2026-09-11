@@ -36,6 +36,12 @@ public class UserService {
         }
     }
 
+    public User updateActive(String id, boolean active) {
+        User user = this.readById(id);
+        user.setActive(active);
+        return user;
+    }
+
     private static class UserNotFoundException extends ResponseStatusException {
         UserNotFoundException() {
             super(HttpStatus.NOT_FOUND, "User not found");

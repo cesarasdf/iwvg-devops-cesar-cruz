@@ -5,6 +5,8 @@ import es.upm.miw.devops.code.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,7 @@ import java.util.List;
 public class UserController {
     public static final String USERS = "/user";
     public static final String SEARCH = "/search";
+    public static final String ID_ACTIVE = "/{id}/active";
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -37,5 +40,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable String id) {
         this.userService.deleteById(id);
+    }
+
+    @PutMapping(ID_ACTIVE)
+    public User updateActive(@PathVariable String id, @RequestBody boolean active) {
+        return this.userService.updateActive(id, active);
     }
 }

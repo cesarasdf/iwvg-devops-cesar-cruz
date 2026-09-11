@@ -71,4 +71,24 @@ class UserServiceTest {
         assertThat(new UserService().findByFilter("Antonio", "Fernandez", null))
                 .isEmpty();
     }
+
+    @Test
+    void testDeleteById() {
+        UserService userService = new UserService();
+        userService.deleteById("1");
+        assertThat(userService.findByFilter(null, null, null))
+                .extracting(User::getId)
+                .containsExactly("2", "3", "4", "5", "6");
+        assertThatThrownBy(() -> userService.readById("1"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("404 NOT_FOUND");
+    }
+
+    @Test
+    void testDeleteByIdNotFound() {
+        assertThatThrownBy(() -> new UserService().deleteById("999"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("404 NOT_FOUND")
+                .hasMessageContaining("User not found");
+    }
 }

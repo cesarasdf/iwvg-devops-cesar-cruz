@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static es.upm.miw.devops.rest.UserController.SEARCH;
@@ -104,5 +105,26 @@ class UserControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(0);
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testDeleteById() {
+        this.webTestClient.delete()
+                .uri(USERS + "/1")
+                .exchange()
+                .expectStatus().isOk();
+        this.webTestClient.get()
+                .uri(USERS + "/1")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testDeleteByIdNotFound() {
+        this.webTestClient.delete()
+                .uri(USERS + "/999")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

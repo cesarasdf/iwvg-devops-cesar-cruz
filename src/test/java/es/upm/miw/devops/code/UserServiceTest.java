@@ -91,4 +91,29 @@ class UserServiceTest {
                 .hasMessageContaining("404 NOT_FOUND")
                 .hasMessageContaining("User not found");
     }
+
+    @Test
+    void testUpdateActive() {
+        UserService userService = new UserService();
+        assertThat(userService.readById("1").isActive()).isTrue();
+        User user = userService.updateActive("1", false);
+        assertThat(user.getId()).isEqualTo("1");
+        assertThat(user.isActive()).isFalse();
+        assertThat(userService.readById("1").isActive()).isFalse();
+    }
+
+    @Test
+    void testUpdateActiveRestoresActive() {
+        UserService userService = new UserService();
+        userService.updateActive("2", false);
+        assertThat(userService.updateActive("2", true).isActive()).isTrue();
+    }
+
+    @Test
+    void testUpdateActiveNotFound() {
+        assertThatThrownBy(() -> new UserService().updateActive("999", false))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("404 NOT_FOUND")
+                .hasMessageContaining("User not found");
+    }
 }

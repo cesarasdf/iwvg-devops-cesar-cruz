@@ -41,11 +41,16 @@ public class UsersDatabase {
         );
 
         return Stream.of(
-                new User("1", "Oscar", "Fernandez", fractions1),
-                new User("2", "Ana", "Blanco", fractions2),
-                new User("3", "Oscar", "López", fractions3),
-                new User("4", "Paula", "Torres", fractions4),
-                new User("5", "Antonio", "Blanco", fractions5),
+                new User("1", "Oscar", "Fernandez", "oscar.fernandez@miw.upm.es", "12345678A", "Calle Mayor 1",
+                        "Madrid", "Madrid", "28001", fractions1),
+                new User("2", "Ana", "Blanco", "ana.blanco@miw.upm.es", "23456789B", "Avenida del Puerto 22",
+                        "Valencia", "Valencia", "46021", fractions2),
+                new User("3", "Oscar", "López", "  ", "34567890C", "Gran Via 3", "Bilbao", "Vizcaya", "48001",
+                        fractions3),
+                new User("4", "Paula", "Torres", "paula.torres@miw.upm.es", "45678901D", "Rambla Nova 8",
+                        "Tarragona", "Tarragona", "43003", fractions4),
+                new User("5", "Antonio", "Blanco", "antonio.blanco@miw.upm.es", "56789012E", "Calle Larios 5",
+                        "Malaga", "Malaga", null, fractions5),
                 new User("6", "Paula", "Torres", fractions6)
         );
     }

@@ -23,4 +23,52 @@ class UserServiceTest {
                 .hasMessageContaining("404 NOT_FOUND")
                 .hasMessageContaining("User not found");
     }
+
+    @Test
+    void testFindByFilterWithoutConditions() {
+        assertThat(new UserService().findByFilter(null, null, null))
+                .extracting(User::getId)
+                .containsExactly("1", "2", "3", "4", "5", "6");
+    }
+
+    @Test
+    void testFindByFilterByBillable() {
+        assertThat(new UserService().findByFilter(null, null, true))
+                .extracting(User::getId)
+                .containsExactly("1", "2", "4");
+    }
+
+    @Test
+    void testFindByFilterByNotBillable() {
+        assertThat(new UserService().findByFilter(null, null, false))
+                .extracting(User::getId)
+                .containsExactly("3", "5", "6");
+    }
+
+    @Test
+    void testFindByFilterByNameAndBillable() {
+        assertThat(new UserService().findByFilter("Paula", null, true))
+                .extracting(User::getId)
+                .containsExactly("4");
+    }
+
+    @Test
+    void testFindByFilterByFamilyNameAndNotBillable() {
+        assertThat(new UserService().findByFilter(null, "Torres", false))
+                .extracting(User::getId)
+                .containsExactly("6");
+    }
+
+    @Test
+    void testFindByFilterByNameAndFamilyName() {
+        assertThat(new UserService().findByFilter("Oscar", "López", null))
+                .extracting(User::getId)
+                .containsExactly("3");
+    }
+
+    @Test
+    void testFindByFilterWithoutMatches() {
+        assertThat(new UserService().findByFilter("Antonio", "Fernandez", null))
+                .isEmpty();
+    }
 }

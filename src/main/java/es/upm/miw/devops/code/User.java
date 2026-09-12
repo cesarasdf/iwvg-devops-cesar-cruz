@@ -1,16 +1,34 @@
 package es.upm.miw.devops.code;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
     private String id;
     private String name;
     private String familyName;
+    private String email;
+    private String identity;
+    private String address;
+    private String city;
+    private String province;
+    private String postalCode;
+    private boolean active;
+    @Transient
     private List<Fraction> fractions;
 
     public User() {
         this.fractions = new ArrayList<>();
+        this.active = true;
     }
 
     public User(String id, String name, String familyName, List<Fraction> fractions) {
@@ -18,6 +36,18 @@ public class User {
         this.name = name;
         this.familyName = familyName;
         this.fractions = fractions;
+        this.active = true;
+    }
+
+    public User(String id, String name, String familyName, String email, String identity, String address, String city,
+                String province, String postalCode, List<Fraction> fractions) {
+        this(id, name, familyName, fractions);
+        this.email = email;
+        this.identity = identity;
+        this.address = address;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postalCode;
     }
 
     public String getId() {
@@ -42,6 +72,68 @@ public class User {
 
     public List<Fraction> getFractions() {
         return fractions;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getIdentity() {
+        return this.identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getProvince() {
+        return this.province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getPostalCode() {
+        return this.postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isBillable() {
+        return Stream.of(this.name, this.familyName, this.email, this.identity, this.address, this.city,
+                        this.province, this.postalCode)
+                .allMatch(field -> field != null && !field.isBlank());
     }
 
     public void setFractions(List<Fraction> fractions) {

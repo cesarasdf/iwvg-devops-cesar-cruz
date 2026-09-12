@@ -1,10 +1,18 @@
 package es.upm.miw.devops.code;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
     private String id;
     private String name;
     private String familyName;
@@ -15,6 +23,7 @@ public class User {
     private String province;
     private String postalCode;
     private boolean active;
+    @Transient
     private List<Fraction> fractions;
 
     public User() {

@@ -17,6 +17,8 @@ RUN mvn clean package -DskipTests
 # ==ETAPA 2: Configuración de la app Java ==
    # Contenedor solo con JRE, para hacerlo mas pequeño
 FROM eclipse-temurin:21-jre-alpine
+   # Vincula la imagen a este repositorio en GitHub Container Registry (auto-link del paquete)
+LABEL org.opencontainers.image.source="https://github.com/cesarasdf/iwvg-devops-cesar-cruz"
 WORKDIR /app
    # Copia el archivo *jar generado en el contenedor de construcción
 COPY --from=build /app/target/*.jar app.jar

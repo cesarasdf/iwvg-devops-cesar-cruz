@@ -1,63 +1,105 @@
-services:
+  services:
 
-  mysql:
-    image: mysql:8.4
-    container_name: mysql-server
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: devopsDb
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - devopsNet
+    postgres:
+      image: postgres:15.10
+      container_name: postgres
+      restart: always
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: iwvgdevopsdb
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+        - ./db/init:/docker-entrypoint-initdb.d
+      networks:
+        - devopsNet
 
-  postgres:
-    image: postgres:15.10
-    container_name: postgres-server
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: devopsDb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - devopsNet
+  volumes:
+    postgres_data:
+      name: "postgres-data"
 
-  mongo:
-    image: mongodb/mongodb-community-server:7.0.16-ubuntu2204
-    container_name: mongo-server
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
-      MONGO_INITDB_DATABASE: devopsDb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-      - mongo_config:/data/configdb
-    networks:
-      - devopsNet
+  networks:
+    devopsNet:
+      external: true
 
-volumes:
-  mysql_data:
-    name: "mysql-data"
-  postgres_data:
-    name: "postgres-data"
-  mongo_data:
-    name: "mongo-data"
-  mongo_config:
-    name: "mongo-config"
+  # Construir todas las BD
+  #> docker compose -f docker-compose-db.yml -p databases up -d
 
-networks:
-  devopsNet:
-    external: true
+  # CONSOLA & COMANDOS Postgres
+  #> docker exec -it postgres  psql -U postgres
+  #  \?   Help
+  #  \l   Database list
+  #  \connect <db> <usr>
+  #  \dt   Table list
+  #  \d <table> ;  describe
+  #  \q   exit
+  #  create database <db>;
+  #  drop database <db>;
+  #  select * from <table>;
+  #  delete from <table>;
+
+#services:
+#
+#  mysql:
+#    image: mysql:8.4
+#    container_name: mysql-server
+#    restart: always
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: devopsDb
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - mysql_data:/var/lib/mysql
+#    networks:
+#      - devopsNet
+#
+#  postgres:
+#    image: postgres:15.10
+#    container_name: postgres-server
+#    restart: always
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: devopsDb
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    networks:
+#      - devopsNet
+#
+#  mongo:
+#    image: mongodb/mongodb-community-server:7.0.16-ubuntu2204
+#    container_name: mongo-server
+#    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: mongo
+#      MONGO_INITDB_ROOT_PASSWORD: mongo
+#      MONGO_INITDB_DATABASE: devopsDb
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - mongo_data:/data/db
+#      - mongo_config:/data/configdb
+#    networks:
+#      - devopsNet
+#
+#volumes:
+#  mysql_data:
+#    name: "mysql-data"
+#  postgres_data:
+#    name: "postgres-data"
+#  mongo_data:
+#    name: "mongo-data"
+#  mongo_config:
+#    name: "mongo-config"
+#
+#networks:
+#  devopsNet:
+#    external: true
 
 # Construir todas las BD
 #> docker compose -f docker-compose-db.yml -p databases up -d

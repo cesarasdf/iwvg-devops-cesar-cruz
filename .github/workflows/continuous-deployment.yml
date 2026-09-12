@@ -1,7 +1,7 @@
 name: CD
 on:
   push:
-    branches: [master]
+    branches: [master, staging]
 
 jobs:
   cd:
@@ -24,7 +24,15 @@ jobs:
         run: |
           echo "GHCR_URL=ghcr.io" >> $GITHUB_ENV
           echo "REPOSITORY=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
-          echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          if [ "${{ github.ref_name }}" = "master" ]; then
+            echo "CHANNEL_TAG=latest" >> $GITHUB_ENV
+            echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
+          else
+            echo "CHANNEL_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "VERSION_TAG=$VERSION-${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
 
       # 1º Crear Token de Acceso Personal:
       #    GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic)
@@ -45,14 +53,14 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.VERSION }}
-            ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
+            ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.VERSION_TAG }}
+            ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.CHANNEL_TAG }}
 
       # 🌐 Render Deployment
       # 1. En Render: Web Service → Settings → Deploy Hook → copiar el token
       # 2. En GitHub: Settings → Secrets and variables → Actions → crear secret: RENDER_DEPLOY_HOOK_TOKEN
-      - name: 🚀 Deploy on Render
-        run: |
-          curl --fail -X POST "https://api.render.com/deploy/${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}" \
-          && echo "✅ Deployment succeeded" \
-          || (echo "❌ Deployment failed" && exit 1)
+#      - name: 🚀 Deploy on Render
+#        run: |
+#          curl --fail -X POST "https://api.render.com/deploy/${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}" \
+#          && echo "✅ Deployment succeeded" \
+#          || (echo "❌ Deployment failed" && exit 1)

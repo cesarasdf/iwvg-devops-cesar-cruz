@@ -1,7 +1,7 @@
-name: CD
+name: CD Staging
 on:
   push:
-    branches: [master, staging]
+    branches: [staging]
 
 jobs:
   cd:
@@ -26,13 +26,8 @@ jobs:
           echo "REPOSITORY=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          if [ "${{ github.ref_name }}" = "master" ]; then
-            echo "CHANNEL_TAG=latest" >> $GITHUB_ENV
-            echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
-          else
-            echo "CHANNEL_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
-            echo "VERSION_TAG=$VERSION-${{ github.ref_name }}" >> $GITHUB_ENV
-          fi
+          echo "CHANNEL_TAG=staging" >> $GITHUB_ENV
+          echo "VERSION_TAG=$VERSION-staging" >> $GITHUB_ENV
 
       # 1º Crear Token de Acceso Personal:
       #    GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic)
@@ -55,6 +50,14 @@ jobs:
           tags: |
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.VERSION_TAG }}
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.CHANNEL_TAG }}
+
+      - name: 🌍 Make GHCR package public
+        run: |
+          curl -L -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/user/packages/container/${{ github.event.repository.name }} \
+            -d '{"visibility":"public"}'
 
       # 🌐 Render Deployment
       # 1. En Render: Web Service → Settings → Deploy Hook → copiar el token

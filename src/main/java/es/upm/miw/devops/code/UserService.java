@@ -42,6 +42,12 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
+    public List<User> updateActive(List<UserActiveUpdate> updates) {
+        return updates.stream()
+                .map(update -> this.updateActive(update.id(), update.active()))
+                .toList();
+    }
+
     public User update(String id, User user) {
         User existingUser = this.readById(id);
         existingUser.setName(user.getName());

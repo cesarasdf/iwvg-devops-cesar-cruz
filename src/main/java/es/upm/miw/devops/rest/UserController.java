@@ -46,4 +46,9 @@ public class UserController {
     public User updateActive(@PathVariable String id, @RequestBody boolean active) {
         return this.userService.updateActive(id, active);
     }
+
+    @PutMapping("/{id}")
+    public User update(@PathVariable String id, @RequestBody User user) {
+        return this.userService.update(id, user);
+    }
 }

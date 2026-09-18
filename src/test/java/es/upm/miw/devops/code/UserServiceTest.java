@@ -8,9 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -154,6 +156,40 @@ class UserServiceTest {
     void testUpdateNotFound() {
         User user = new User("999", "Name", "FamilyName", new ArrayList<>());
         assertThatThrownBy(() -> this.userService.update("999", user))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("404 NOT_FOUND")
+                .hasMessageContaining("User not found");
+    }
+
+    @Test
+    void testUpdateActiveList() {
+        assertThat(this.userService.readById("1").isActive()).isTrue();
+        assertThat(this.userService.readById("2").isActive()).isTrue();
+
+        List<User> updatedUsers = this.userService.updateActive(List.of(
+                new UserActiveUpdate("1", false),
+                new UserActiveUpdate("2", false)
+        ));
+
+        assertThat(updatedUsers)
+                .extracting(User::getId, User::isActive)
+                .containsExactly(
+                        tuple("1", false),
+                        tuple("2", false)
+                );
+        assertThat(this.userService.readById("1").isActive()).isFalse();
+        assertThat(this.userService.readById("2").isActive()).isFalse();
+    }
+
+    @Test
+    void testUpdateActiveListEmpty() {
+        assertThat(this.userService.updateActive(List.of())).isEmpty();
+    }
+
+    @Test
+    void testUpdateActiveListNotFound() {
+        List<UserActiveUpdate> updates = List.of(new UserActiveUpdate("999", false));
+        assertThatThrownBy(() -> this.userService.updateActive(updates))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
                 .hasMessageContaining("User not found");

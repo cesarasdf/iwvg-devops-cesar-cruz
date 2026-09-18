@@ -1,6 +1,7 @@
 package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.code.User;
+import es.upm.miw.devops.code.UserActiveUpdate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -11,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static es.upm.miw.devops.rest.UserController.SEARCH;
 import static es.upm.miw.devops.rest.UserController.USERS;
@@ -191,6 +193,54 @@ class UserControllerTest {
                 .uri(USERS + "/999")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new User("999", "Name", "FamilyName", new ArrayList<>()))
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testUpdateActiveList() {
+        this.webTestClient.patch()
+                .uri(USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(List.of(
+                        new UserActiveUpdate("1", false),
+                        new UserActiveUpdate("2", false)
+                ))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(2)
+                .jsonPath("$[0].id").isEqualTo("1")
+                .jsonPath("$[0].active").isEqualTo(false)
+                .jsonPath("$[1].id").isEqualTo("2")
+                .jsonPath("$[1].active").isEqualTo(false);
+        this.webTestClient.get()
+                .uri(USERS + "/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.active").isEqualTo(false);
+    }
+
+    @Test
+    void testUpdateActiveListEmpty() {
+        this.webTestClient.patch()
+                .uri(USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(List.of())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(0);
+    }
+
+    @Test
+    void testUpdateActiveListNotFound() {
+        this.webTestClient.patch()
+                .uri(USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(List.of(new UserActiveUpdate("999", false)))
                 .exchange()
                 .expectStatus().isNotFound();
     }

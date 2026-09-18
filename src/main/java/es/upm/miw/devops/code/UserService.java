@@ -42,6 +42,20 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
+    public User update(String id, User user) {
+        User existingUser = this.readById(id);
+        existingUser.setName(user.getName());
+        existingUser.setFamilyName(user.getFamilyName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setIdentity(user.getIdentity());
+        existingUser.setAddress(user.getAddress());
+        existingUser.setCity(user.getCity());
+        existingUser.setProvince(user.getProvince());
+        existingUser.setPostalCode(user.getPostalCode());
+        existingUser.setActive(user.isActive());
+        return this.userRepository.save(existingUser);
+    }
+
     private static class UserNotFoundException extends ResponseStatusException {
         UserNotFoundException() {
             super(HttpStatus.NOT_FOUND, "User not found");

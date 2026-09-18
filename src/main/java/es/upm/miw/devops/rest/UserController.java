@@ -1,9 +1,11 @@
 package es.upm.miw.devops.rest;
 
 import es.upm.miw.devops.code.User;
+import es.upm.miw.devops.code.UserActiveUpdate;
 import es.upm.miw.devops.code.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,5 +47,15 @@ public class UserController {
     @PutMapping(ID_ACTIVE)
     public User updateActive(@PathVariable String id, @RequestBody boolean active) {
         return this.userService.updateActive(id, active);
+    }
+
+    @PutMapping("/{id}")
+    public User update(@PathVariable String id, @RequestBody User user) {
+        return this.userService.update(id, user);
+    }
+
+    @PatchMapping
+    public List<User> updateActive(@RequestBody List<UserActiveUpdate> updates) {
+        return this.userService.updateActive(updates);
     }
 }

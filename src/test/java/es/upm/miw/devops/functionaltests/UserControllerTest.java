@@ -1,5 +1,6 @@
 package es.upm.miw.devops.functionaltests;
 
+import es.upm.miw.devops.code.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -8,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.ArrayList;
 
 import static es.upm.miw.devops.rest.UserController.SEARCH;
 import static es.upm.miw.devops.rest.UserController.USERS;
@@ -155,6 +158,39 @@ class UserControllerTest {
                 .uri(USERS + "/999/active")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(false)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testUpdate() {
+        this.webTestClient.put()
+                .uri(USERS + "/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                        "Address 2", "City 2", "Province 2", "28002", new ArrayList<>()))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1")
+                .jsonPath("$.name").isEqualTo("Oscar2")
+                .jsonPath("$.familyName").isEqualTo("Fernandez2")
+                .jsonPath("$.email").isEqualTo("oscar2@mail.com");
+        this.webTestClient.get()
+                .uri(USERS + "/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("Oscar2");
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        this.webTestClient.put()
+                .uri(USERS + "/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new User("999", "Name", "FamilyName", new ArrayList<>()))
                 .exchange()
                 .expectStatus().isNotFound();
     }

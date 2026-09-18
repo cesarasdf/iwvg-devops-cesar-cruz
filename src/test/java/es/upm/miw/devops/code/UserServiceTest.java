@@ -7,6 +7,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -119,6 +121,39 @@ class UserServiceTest {
     @Test
     void testUpdateActiveNotFound() {
         assertThatThrownBy(() -> this.userService.updateActive("999", false))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("404 NOT_FOUND")
+                .hasMessageContaining("User not found");
+    }
+
+    @Test
+    void testUpdate() {
+        User user = new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", new ArrayList<>());
+        user.setActive(false);
+
+        User updatedUser = this.userService.update("1", user);
+
+        assertThat(updatedUser.getId()).isEqualTo("1");
+        assertThat(updatedUser.getName()).isEqualTo("Oscar2");
+        assertThat(updatedUser.getFamilyName()).isEqualTo("Fernandez2");
+        assertThat(updatedUser.getEmail()).isEqualTo("oscar2@mail.com");
+        assertThat(updatedUser.getIdentity()).isEqualTo("12345678A");
+        assertThat(updatedUser.getAddress()).isEqualTo("Address 2");
+        assertThat(updatedUser.getCity()).isEqualTo("City 2");
+        assertThat(updatedUser.getProvince()).isEqualTo("Province 2");
+        assertThat(updatedUser.getPostalCode()).isEqualTo("28002");
+        assertThat(updatedUser.isActive()).isFalse();
+
+        User persistedUser = this.userService.readById("1");
+        assertThat(persistedUser.getName()).isEqualTo("Oscar2");
+        assertThat(persistedUser.isActive()).isFalse();
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        User user = new User("999", "Name", "FamilyName", new ArrayList<>());
+        assertThatThrownBy(() -> this.userService.update("999", user))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
                 .hasMessageContaining("User not found");

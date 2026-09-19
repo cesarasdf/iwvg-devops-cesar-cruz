@@ -62,6 +62,7 @@ jobs:
           host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
           username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
           key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          command_timeout: 20m
           envs: GHCR_TOKEN,POSTGRES_USER,POSTGRES_PASSWORD
           script: |
             echo "$GHCR_TOKEN" | docker login ${{ env.GHCR_URL }} -u ${{ github.actor }} --password-stdin
@@ -73,11 +74,12 @@ jobs:
             docker run -d \
               --name ${{ env.ARTIFACT }} \
               --restart always \
-              --memory 512m \
-              --memory-swap 1024m \
+              --memory 300m \
+              --memory-swap 700m \
               --network devops \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
+              -e JAVA_TOOL_OPTIONS="-Xmx192m -Xss256k -XX:MaxMetaspaceSize=96m" \
               -e POSTGRES_USER="$POSTGRES_USER" \
               -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
               ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest

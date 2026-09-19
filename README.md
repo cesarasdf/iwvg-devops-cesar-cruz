@@ -13,6 +13,7 @@
 [![CI](https://github.com/cesarasdf/iwvg-devops-cesar-cruz/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/cesarasdf/iwvg-devops-cesar-cruz/actions/workflows/continuous-integration.yml)
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=cesarasdf_iwvg-devops-cesar-cruz&token=1c98b3ede75872b392659c91ac2c5269c4c5b016)](https://sonarcloud.io/summary/new_code?id=cesarasdf_iwvg-devops-cesar-cruz)
 [![Render broken](https://iwvg-devops-cesar-cruz.onrender.com/version-badge)](https://iwvg-devops-cesar-cruz.onrender.com/swagger-ui.html)
+[![AWS](http://35.181.168.102:8080/version-badge)](http://35.181.168.102:8080/version-badge)
 
 
 ### Tecnologías necesarias

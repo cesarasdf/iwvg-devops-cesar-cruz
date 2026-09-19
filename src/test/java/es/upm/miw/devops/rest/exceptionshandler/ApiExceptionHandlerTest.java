@@ -1,6 +1,8 @@
 package es.upm.miw.devops.rest.exceptionshandler;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -12,21 +14,33 @@ class ApiExceptionHandlerTest {
 
     @Test
     void testNoResourceFoundRequest() {
-        ErrorMessage errorMessage = apiExceptionHandler.noResourceFoundRequest(
+        ResponseEntity<ErrorMessage> response = apiExceptionHandler.noResourceFoundRequest(
                 new NoResourceFoundException(org.springframework.http.HttpMethod.GET, "/unknown"));
-        assertThat(errorMessage.getCode()).isEqualTo(404);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody().getCode()).isEqualTo(404);
     }
 
     @Test
-    void testNoResourceFoundRequestFromResponseStatusException() {
-        ErrorMessage errorMessage = apiExceptionHandler.noResourceFoundRequest(
-                new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
-        assertThat(errorMessage.getCode()).isEqualTo(404);
+    void testResponseStatusExceptionNotFound() {
+        ResponseEntity<ErrorMessage> response = apiExceptionHandler.responseStatusException(
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody().getCode()).isEqualTo(404);
+    }
+
+    @Test
+    void testResponseStatusExceptionConflict() {
+        ResponseEntity<ErrorMessage> response = apiExceptionHandler.responseStatusException(
+                new ResponseStatusException(HttpStatus.CONFLICT, "An ADMIN user cannot be deactivated"));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody().getCode()).isEqualTo(409);
+        assertThat(response.getBody().getMessage()).contains("ADMIN");
     }
 
     @Test
     void testException() {
-        ErrorMessage errorMessage = apiExceptionHandler.exception(new RuntimeException("Boom"));
-        assertThat(errorMessage.getCode()).isEqualTo(500);
+        ResponseEntity<ErrorMessage> response = apiExceptionHandler.exception(new RuntimeException("Boom"));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody().getCode()).isEqualTo(500);
     }
 }

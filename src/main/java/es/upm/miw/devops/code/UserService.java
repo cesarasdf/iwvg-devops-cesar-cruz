@@ -38,6 +38,7 @@ public class UserService {
 
     public User updateActive(String id, boolean active) {
         User user = this.readById(id);
+        this.checkAdminDeactivation(user, active);
         user.setActive(active);
         return this.userRepository.save(user);
     }
@@ -50,6 +51,7 @@ public class UserService {
 
     public User update(String id, User user) {
         User existingUser = this.readById(id);
+        this.checkAdminDeactivation(existingUser, user.isActive());
         existingUser.setName(user.getName());
         existingUser.setFamilyName(user.getFamilyName());
         existingUser.setEmail(user.getEmail());
@@ -62,9 +64,21 @@ public class UserService {
         return this.userRepository.save(existingUser);
     }
 
+    private void checkAdminDeactivation(User user, boolean active) {
+        if (!active && user.getRole() == Role.ADMIN) {
+            throw new AdminCannotBeDeactivatedException();
+        }
+    }
+
     private static class UserNotFoundException extends ResponseStatusException {
         UserNotFoundException() {
             super(HttpStatus.NOT_FOUND, "User not found");
+        }
+    }
+
+    private static class AdminCannotBeDeactivatedException extends ResponseStatusException {
+        AdminCannotBeDeactivatedException() {
+            super(HttpStatus.CONFLICT, "An ADMIN user cannot be deactivated");
         }
     }
 }

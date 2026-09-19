@@ -22,6 +22,9 @@ class UserServiceTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void testReadById() {
         User user = this.userService.readById("1");
@@ -35,7 +38,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.readById("999"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -102,7 +105,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.deleteById("999"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -125,16 +128,37 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.updateActive("999", false))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
+    }
+
+    @Test
+    void testUpdateActiveAdminCannotBeDeactivated() {
+        this.makeAdmin("1");
+
+        assertThatThrownBy(() -> this.userService.updateActive("1", false))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("409 CONFLICT")
+                .hasMessageContaining("ADMIN");
+        assertThat(this.userService.readById("1").isActive()).isTrue();
+    }
+
+    @Test
+    void testUpdateActiveAdminCanBeActivated() {
+        this.makeAdmin("1");
+        this.userRepository.findById("1").ifPresent(user -> {
+            user.setActive(false);
+            this.userRepository.save(user);
+        });
+
+        assertThat(this.userService.updateActive("1", true).isActive()).isTrue();
     }
 
     @Test
     void testUpdate() {
-        User user = new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
-                "Address 2", "City 2", "Province 2", "28002", new ArrayList<>());
-        user.setActive(false);
+        UserUpdateRequest request = new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", false);
 
-        User updatedUser = this.userService.update("1", user);
+        User updatedUser = this.userService.update("1", request);
 
         assertThat(updatedUser.getId()).isEqualTo("1");
         assertThat(updatedUser.getName()).isEqualTo("Oscar2");
@@ -154,11 +178,11 @@ class UserServiceTest {
 
     @Test
     void testUpdateNotFound() {
-        User user = new User("999", "Name", "FamilyName", new ArrayList<>());
-        assertThatThrownBy(() -> this.userService.update("999", user))
+        UserUpdateRequest request = new UserUpdateRequest("Name", "FamilyName", null, null, null, null, null, null, true);
+        assertThatThrownBy(() -> this.userService.update("999", request))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -192,6 +216,39 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.updateActive(updates))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
+    }
+
+    @Test
+    void testUpdateActiveListAdminCannotBeDeactivated() {
+        this.makeAdmin("1");
+        List<UserActiveUpdate> updates = List.of(
+                new UserActiveUpdate("2", false),
+                new UserActiveUpdate("1", false)
+        );
+
+        assertThatThrownBy(() -> this.userService.updateActive(updates))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("409 CONFLICT")
+                .hasMessageContaining("ADMIN");
+    }
+
+    @Test
+    void testUpdateAdminCannotBeDeactivated() {
+        this.makeAdmin("1");
+        UserUpdateRequest request = new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", false);
+
+        assertThatThrownBy(() -> this.userService.update("1", request))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("409 CONFLICT")
+                .hasMessageContaining("ADMIN");
+        assertThat(this.userService.readById("1").getName()).isEqualTo("Oscar");
+    }
+
+    private void makeAdmin(String id) {
+        User user = this.userRepository.findById(id).orElseThrow();
+        user.setRole(Role.ADMIN);
+        this.userRepository.save(user);
     }
 }

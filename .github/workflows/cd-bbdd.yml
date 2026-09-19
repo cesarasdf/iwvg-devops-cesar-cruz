@@ -33,6 +33,8 @@ jobs:
                 --name postgres \
                 --restart always \
                 --network devops \
+                --memory 128m \
+                --memory-swap 256m \
                 -e POSTGRES_USER="$POSTGRES_USER" \
                 -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
                 -e POSTGRES_DB=iwvgdevopsdb \

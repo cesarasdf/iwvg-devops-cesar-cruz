@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping(UserController.USERS)
 public class UserController {
     public static final String USERS = "/user";
-    public static final String SEARCH = "/search";
     public static final String ID_ACTIVE = "/{id}/active";
     private final UserService userService;
 
@@ -28,16 +27,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
-    public User readById(@PathVariable String id) {
-        return this.userService.readById(id);
-    }
-
-    @GetMapping(SEARCH)
+    @GetMapping
     public List<User> findByFilter(@RequestParam(required = false) String name,
                                    @RequestParam(required = false) String familyName,
                                    @RequestParam(required = false) Boolean billable) {
         return this.userService.findByFilter(name, familyName, billable);
+    }
+
+    @GetMapping("/{id}")
+    public User readById(@PathVariable String id) {
+        return this.userService.readById(id);
     }
 
     @DeleteMapping("/{id}")

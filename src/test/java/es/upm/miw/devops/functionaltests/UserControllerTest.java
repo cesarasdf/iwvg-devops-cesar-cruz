@@ -18,7 +18,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.ArrayList;
 import java.util.List;
 
-import static es.upm.miw.devops.rest.UserController.SEARCH;
 import static es.upm.miw.devops.rest.UserController.USERS;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,7 +54,7 @@ class UserControllerTest {
     @Test
     void testFindByFilterByBillable() {
         this.webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path(USERS + SEARCH)
+                .uri(uriBuilder -> uriBuilder.path(USERS)
                         .queryParam("billable", true)
                         .build())
                 .exchange()
@@ -70,7 +69,7 @@ class UserControllerTest {
     @Test
     void testFindByFilterByNotBillable() {
         this.webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path(USERS + SEARCH)
+                .uri(uriBuilder -> uriBuilder.path(USERS)
                         .queryParam("billable", false)
                         .build())
                 .exchange()
@@ -85,7 +84,7 @@ class UserControllerTest {
     @Test
     void testFindByFilterByNameAndFamilyNameAndBillable() {
         this.webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path(USERS + SEARCH)
+                .uri(uriBuilder -> uriBuilder.path(USERS)
                         .queryParam("name", "Paula")
                         .queryParam("familyName", "Torres")
                         .queryParam("billable", true)
@@ -100,7 +99,7 @@ class UserControllerTest {
     @Test
     void testFindByFilterWithoutConditions() {
         this.webTestClient.get()
-                .uri(USERS + SEARCH)
+                .uri(USERS)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -110,7 +109,7 @@ class UserControllerTest {
     @Test
     void testFindByFilterWithoutMatches() {
         this.webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path(USERS + SEARCH)
+                .uri(uriBuilder -> uriBuilder.path(USERS)
                         .queryParam("name", "Antonio")
                         .queryParam("familyName", "Fernandez")
                         .build())
@@ -118,6 +117,20 @@ class UserControllerTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(0);
+    }
+
+    @Test
+    void testFindByFilterByNameCaseInsensitive() {
+        this.webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path(USERS)
+                        .queryParam("name", "pAuLa")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(2)
+                .jsonPath("$[0].id").isEqualTo("4")
+                .jsonPath("$[1].id").isEqualTo("6");
     }
 
     @Test

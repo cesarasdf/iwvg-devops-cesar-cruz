@@ -17,7 +17,7 @@ public class UserService {
 
     public User readById(String id) {
         return this.userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     public List<User> findByFilter(String name, String familyName, Boolean billable) {
@@ -31,7 +31,7 @@ public class UserService {
 
     public void deleteById(String id) {
         if (!this.userRepository.existsById(id)) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(id);
         }
         this.userRepository.deleteById(id);
     }
@@ -66,19 +66,19 @@ public class UserService {
 
     private void checkAdminDeactivation(User user, boolean active) {
         if (!active && user.getRole() == Role.ADMIN) {
-            throw new AdminCannotBeDeactivatedException();
+            throw new AdminCannotBeDeactivatedException(user.getId());
         }
     }
 
     private static class UserNotFoundException extends ResponseStatusException {
-        UserNotFoundException() {
-            super(HttpStatus.NOT_FOUND, "User not found");
+        UserNotFoundException(String id) {
+            super(HttpStatus.NOT_FOUND, "User with id '" + id + "' does not exist");
         }
     }
 
     private static class AdminCannotBeDeactivatedException extends ResponseStatusException {
-        AdminCannotBeDeactivatedException() {
-            super(HttpStatus.CONFLICT, "An ADMIN user cannot be deactivated");
+        AdminCannotBeDeactivatedException(String id) {
+            super(HttpStatus.CONFLICT, "User with id '" + id + "' has ADMIN role and cannot be deactivated");
         }
     }
 }

@@ -38,7 +38,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.readById("999"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -105,7 +105,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.deleteById("999"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -128,7 +128,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.updateActive("999", false))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -183,7 +183,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.update("999", user))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test
@@ -217,7 +217,7 @@ class UserServiceTest {
         assertThatThrownBy(() -> this.userService.updateActive(updates))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
-                .hasMessageContaining("User not found");
+                .hasMessageContaining("does not exist");
     }
 
     @Test

@@ -25,7 +25,8 @@ public class ApiExceptionHandler {
     @ResponseBody
     public ResponseEntity<ErrorMessage> responseStatusException(ResponseStatusException exception) {
         HttpStatusCode status = exception.getStatusCode();
-        ErrorMessage errorMessage = new ErrorMessage(exception, status.value());
+        String reason = exception.getReason() != null ? exception.getReason() : exception.getMessage();
+        ErrorMessage errorMessage = new ErrorMessage(new RuntimeException(reason), status.value());
         return ResponseEntity.status(status).body(errorMessage);
     }
 

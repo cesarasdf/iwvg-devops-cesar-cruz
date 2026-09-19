@@ -38,6 +38,15 @@ class ApiExceptionHandlerTest {
     }
 
     @Test
+    void testResponseStatusExceptionWithoutReason() {
+        ResponseEntity<ErrorMessage> response = apiExceptionHandler.responseStatusException(
+                new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getCode()).isEqualTo(400);
+        assertThat(response.getBody().getMessage()).isNotBlank();
+    }
+
+    @Test
     void testException() {
         ResponseEntity<ErrorMessage> response = apiExceptionHandler.exception(new RuntimeException("Boom"));
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

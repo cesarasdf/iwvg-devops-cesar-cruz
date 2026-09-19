@@ -1,11 +1,15 @@
 package es.upm.miw.devops.functionaltests;
 
+import es.upm.miw.devops.code.Role;
 import es.upm.miw.devops.code.User;
 import es.upm.miw.devops.code.UserActiveUpdate;
+import es.upm.miw.devops.code.UserRepository;
+import es.upm.miw.devops.code.UserUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,6 +28,9 @@ class UserControllerTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void testReadById() {
@@ -166,12 +173,31 @@ class UserControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testUpdateActiveAdminCannotBeDeactivated() {
+        this.makeAdmin("1");
+
+        this.webTestClient.put()
+                .uri(USERS + "/1/active")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(false)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
+        this.webTestClient.get()
+                .uri(USERS + "/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.active").isEqualTo(true);
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void testUpdate() {
         this.webTestClient.put()
                 .uri(USERS + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
-                        "Address 2", "City 2", "Province 2", "28002", new ArrayList<>()))
+                .bodyValue(new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                        "Address 2", "City 2", "Province 2", "28002", true))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -192,9 +218,24 @@ class UserControllerTest {
         this.webTestClient.put()
                 .uri(USERS + "/999")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new User("999", "Name", "FamilyName", new ArrayList<>()))
+                .bodyValue(new UserUpdateRequest("Name", "FamilyName", null, null, null, null, null, null, true))
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testUpdateAdminCannotBeDeactivated() {
+        this.makeAdmin("1");
+        UserUpdateRequest request = new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", false);
+
+        this.webTestClient.put()
+                .uri(USERS + "/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
     }
 
     @Test
@@ -243,5 +284,27 @@ class UserControllerTest {
                 .bodyValue(List.of(new UserActiveUpdate("999", false)))
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void testUpdateActiveListAdminCannotBeDeactivated() {
+        this.makeAdmin("1");
+
+        this.webTestClient.patch()
+                .uri(USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(List.of(
+                        new UserActiveUpdate("2", false),
+                        new UserActiveUpdate("1", false)
+                ))
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    private void makeAdmin(String id) {
+        User user = this.userRepository.findById(id).orElseThrow();
+        user.setRole(Role.ADMIN);
+        this.userRepository.save(user);
     }
 }

@@ -155,11 +155,10 @@ class UserServiceTest {
 
     @Test
     void testUpdate() {
-        User user = new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
-                "Address 2", "City 2", "Province 2", "28002", new ArrayList<>());
-        user.setActive(false);
+        UserUpdateRequest request = new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", false);
 
-        User updatedUser = this.userService.update("1", user);
+        User updatedUser = this.userService.update("1", request);
 
         assertThat(updatedUser.getId()).isEqualTo("1");
         assertThat(updatedUser.getName()).isEqualTo("Oscar2");
@@ -179,8 +178,8 @@ class UserServiceTest {
 
     @Test
     void testUpdateNotFound() {
-        User user = new User("999", "Name", "FamilyName", new ArrayList<>());
-        assertThatThrownBy(() -> this.userService.update("999", user))
+        UserUpdateRequest request = new UserUpdateRequest("Name", "FamilyName", null, null, null, null, null, null, true);
+        assertThatThrownBy(() -> this.userService.update("999", request))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("404 NOT_FOUND")
                 .hasMessageContaining("does not exist");
@@ -237,11 +236,10 @@ class UserServiceTest {
     @Test
     void testUpdateAdminCannotBeDeactivated() {
         this.makeAdmin("1");
-        User user = new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
-                "Address 2", "City 2", "Province 2", "28002", new ArrayList<>());
-        user.setActive(false);
+        UserUpdateRequest request = new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", false);
 
-        assertThatThrownBy(() -> this.userService.update("1", user))
+        assertThatThrownBy(() -> this.userService.update("1", request))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("409 CONFLICT")
                 .hasMessageContaining("ADMIN");

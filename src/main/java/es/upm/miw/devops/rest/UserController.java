@@ -3,6 +3,7 @@ package es.upm.miw.devops.rest;
 import es.upm.miw.devops.code.User;
 import es.upm.miw.devops.code.UserActiveUpdate;
 import es.upm.miw.devops.code.UserService;
+import es.upm.miw.devops.code.UserUpdateRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -50,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User update(@PathVariable String id, @RequestBody User user) {
+    public User update(@PathVariable String id, @RequestBody UserUpdateRequest user) {
         return this.userService.update(id, user);
     }
 

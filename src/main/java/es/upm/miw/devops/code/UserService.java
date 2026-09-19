@@ -49,18 +49,18 @@ public class UserService {
                 .toList();
     }
 
-    public User update(String id, User user) {
+    public User update(String id, UserUpdateRequest request) {
         User existingUser = this.readById(id);
-        this.checkAdminDeactivation(existingUser, user.isActive());
-        existingUser.setName(user.getName());
-        existingUser.setFamilyName(user.getFamilyName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setIdentity(user.getIdentity());
-        existingUser.setAddress(user.getAddress());
-        existingUser.setCity(user.getCity());
-        existingUser.setProvince(user.getProvince());
-        existingUser.setPostalCode(user.getPostalCode());
-        existingUser.setActive(user.isActive());
+        this.checkAdminDeactivation(existingUser, request.active());
+        existingUser.setName(request.name());
+        existingUser.setFamilyName(request.familyName());
+        existingUser.setEmail(request.email());
+        existingUser.setIdentity(request.identity());
+        existingUser.setAddress(request.address());
+        existingUser.setCity(request.city());
+        existingUser.setProvince(request.province());
+        existingUser.setPostalCode(request.postalCode());
+        existingUser.setActive(request.active());
         return this.userRepository.save(existingUser);
     }
 

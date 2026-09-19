@@ -4,6 +4,7 @@ import es.upm.miw.devops.code.Role;
 import es.upm.miw.devops.code.User;
 import es.upm.miw.devops.code.UserActiveUpdate;
 import es.upm.miw.devops.code.UserRepository;
+import es.upm.miw.devops.code.UserUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -195,8 +196,8 @@ class UserControllerTest {
         this.webTestClient.put()
                 .uri(USERS + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
-                        "Address 2", "City 2", "Province 2", "28002", new ArrayList<>()))
+                .bodyValue(new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                        "Address 2", "City 2", "Province 2", "28002", true))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -217,7 +218,7 @@ class UserControllerTest {
         this.webTestClient.put()
                 .uri(USERS + "/999")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new User("999", "Name", "FamilyName", new ArrayList<>()))
+                .bodyValue(new UserUpdateRequest("Name", "FamilyName", null, null, null, null, null, null, true))
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -226,14 +227,13 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void testUpdateAdminCannotBeDeactivated() {
         this.makeAdmin("1");
-        User user = new User("1", "Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
-                "Address 2", "City 2", "Province 2", "28002", new ArrayList<>());
-        user.setActive(false);
+        UserUpdateRequest request = new UserUpdateRequest("Oscar2", "Fernandez2", "oscar2@mail.com", "12345678A",
+                "Address 2", "City 2", "Province 2", "28002", false);
 
         this.webTestClient.put()
                 .uri(USERS + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(user)
+                .bodyValue(request)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT);
     }

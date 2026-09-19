@@ -84,6 +84,20 @@ class UserServiceTest {
     }
 
     @Test
+    void testFindByFilterByNameCaseInsensitive() {
+        assertThat(this.userService.findByFilter("paULa", null, null))
+                .extracting(User::getId)
+                .containsExactlyInAnyOrder("4", "6");
+    }
+
+    @Test
+    void testFindByFilterByFamilyNameCaseInsensitive() {
+        assertThat(this.userService.findByFilter(null, "TORRES", null))
+                .extracting(User::getId)
+                .containsExactlyInAnyOrder("4", "6");
+    }
+
+    @Test
     void testFindByFilterWithoutMatches() {
         assertThat(this.userService.findByFilter("Antonio", "Fernandez", null))
                 .isEmpty();

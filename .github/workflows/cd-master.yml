@@ -74,12 +74,12 @@ jobs:
             docker run -d \
               --name ${{ env.ARTIFACT }} \
               --restart always \
-              --memory 300m \
-              --memory-swap 700m \
+              --memory 200m \
+              --memory-swap 450m \
               --network devops \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
-              -e JAVA_TOOL_OPTIONS="-Xmx192m -Xss256k -XX:MaxMetaspaceSize=96m" \
+              -e JAVA_TOOL_OPTIONS="-Xmx128m -Xss256k -XX:MaxMetaspaceSize=96m" \
               -e POSTGRES_USER="$POSTGRES_USER" \
               -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
               ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest

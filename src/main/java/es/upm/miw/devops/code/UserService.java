@@ -22,8 +22,8 @@ public class UserService {
 
     public List<User> findByFilter(String name, String familyName, Boolean billable) {
         return this.userRepository.findAll().stream()
-                .filter(user -> name == null || name.equals(user.getName()))
-                .filter(user -> familyName == null || familyName.equals(user.getFamilyName()))
+                .filter(user -> name == null || name.equalsIgnoreCase(user.getName()))
+                .filter(user -> familyName == null || familyName.equalsIgnoreCase(user.getFamilyName()))
                 .filter(user -> billable == null || billable == user.isBillable())
                 .sorted(Comparator.comparing(User::getId))
                 .toList();

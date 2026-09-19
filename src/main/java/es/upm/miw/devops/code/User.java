@@ -1,6 +1,8 @@
 package es.upm.miw.devops.code;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -23,12 +25,15 @@ public class User {
     private String province;
     private String postalCode;
     private boolean active;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @Transient
     private List<Fraction> fractions;
 
     public User() {
         this.fractions = new ArrayList<>();
         this.active = true;
+        this.role = Role.USER;
     }
 
     public User(String id, String name, String familyName, List<Fraction> fractions) {
@@ -37,6 +42,7 @@ public class User {
         this.familyName = familyName;
         this.fractions = fractions;
         this.active = true;
+        this.role = Role.USER;
     }
 
     public User(String id, String name, String familyName, String email, String identity, String address, String city,
@@ -128,6 +134,14 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public boolean isBillable() {

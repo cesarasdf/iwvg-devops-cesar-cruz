@@ -22,6 +22,9 @@ LABEL org.opencontainers.image.source="https://github.com/cesarasdf/iwvg-devops-
 WORKDIR /app
    # Copia el archivo *jar generado en el contenedor de construcción
 COPY --from=build /app/target/*.jar app.jar
+   # Healthcheck usado por el despliegue (docker inspect --format='{{.State.Health.Status}}')
+HEALTHCHECK --interval=15s --timeout=5s --start-period=40s --retries=6 \
+    CMD wget -qO- http://localhost:8080/actuator/health | grep -q '"status":"UP"' || exit 1
    # Define un comando para cuando se inicialice el contenedor en el host: java -jar app.jar
 CMD ["java", "-jar", "app.jar"]
 

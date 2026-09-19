@@ -1,0 +1,41 @@
+name: CD BBDD
+on:
+  push:
+    branches: [master]
+
+jobs:
+  cd:
+    name: Deploy Docker Postgres on AWS Lightsail
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Secrets requeridos: AWS_LIGHTSAIL_IP_MAIN, AWS_LIGHTSAIL_USER_MAIN, AWS_LIGHTSAIL_SSH_KEY_MAIN,
+      # POSTGRES_USER, POSTGRES_PASSWORD
+      - name: 🚀 Deploy on AWS Lightsail
+        uses: appleboy/ssh-action@8faa84277b88b6cd1455986f459aa66cf72bc8a3 # v1.2.1
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          envs: POSTGRES_USER,POSTGRES_PASSWORD
+          script: |
+            docker network create devops || true
+
+            if [ "$(docker ps -aq -f name=^postgres$)" ]; then
+              echo "ℹ️ El contenedor postgres ya existe: se reinicia sin recrearlo para no perder datos."
+              docker start postgres
+            else
+              echo "🆕 Creando el contenedor postgres con volumen persistente pgdata."
+              docker run -d \
+                --name postgres \
+                --restart always \
+                --network devops \
+                -e POSTGRES_USER="$POSTGRES_USER" \
+                -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+                -e POSTGRES_DB=iwvgdevopsdb \
+                -v pgdata:/var/lib/postgresql/data \
+                postgres:15.10
+            fi

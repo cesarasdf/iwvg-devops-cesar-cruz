@@ -1,10 +1,10 @@
 package es.upm.miw.devops.functionaltests;
 
-import es.upm.miw.devops.code.Role;
-import es.upm.miw.devops.code.User;
-import es.upm.miw.devops.code.UserActiveUpdate;
-import es.upm.miw.devops.code.UserRepository;
-import es.upm.miw.devops.code.UserUpdateRequest;
+import es.upm.miw.devops.dto.UserActiveUpdate;
+import es.upm.miw.devops.dto.UserUpdateRequest;
+import es.upm.miw.devops.model.Role;
+import es.upm.miw.devops.model.User;
+import es.upm.miw.devops.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -15,10 +15,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static es.upm.miw.devops.rest.UserController.USERS;
+import static es.upm.miw.devops.controller.UserController.USERS;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient

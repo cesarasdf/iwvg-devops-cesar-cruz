@@ -1,6 +1,6 @@
 package es.upm.miw.devops.functionaltests;
 
-import es.upm.miw.devops.rest.SystemResource;
+import es.upm.miw.devops.controller.SystemResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static es.upm.miw.devops.rest.SystemResource.SYSTEM;
-import static es.upm.miw.devops.rest.SystemResource.VERSION_BADGE;
+import static es.upm.miw.devops.controller.SystemResource.SYSTEM;
+import static es.upm.miw.devops.controller.SystemResource.VERSION_BADGE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

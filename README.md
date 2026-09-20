@@ -2,12 +2,12 @@
 ## Ingeniería Web: Visión General (IWVG) DevOps
 > Este proyecto es un apoyo docente de la asignatura. Cada release liberada corresponde al código utilizado en clase del curso indicado
 
-[![GitHub](https://img.shields.io/github/license/miw-upm/iwvg-devops?color=informational)](https://github.com/miw-upm/iwvg-devops/blob/develop/LICENSE.md)
-[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/miw-upm/iwvg-devops?color=informational)](https://github.com/miw-upm/iwvg-devops/releases)
-![GitHub Release Date](https://img.shields.io/github/release-date/miw-upm/iwvg-devops?color=informational)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/miw-upm/iwvg-devops)
-![GitHub issues](https://img.shields.io/github/issues/miw-upm/iwvg-devops?color=important)
-![GitHub closed issues](https://img.shields.io/github/issues-closed/miw-upm/iwvg-devops?color=informational)
+[![GitHub](https://img.shields.io/github/license/cesarasdf/iwvg-devops-cesar-cruz?color=informational)](https://github.com/cesarasdf/iwvg-devops-cesar-cruz/blob/master/LICENSE.md)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/cesarasdf/iwvg-devops-cesar-cruz?color=informational)](https://github.com/cesarasdf/iwvg-devops-cesar-cruz/releases)
+![GitHub Release Date](https://img.shields.io/github/release-date/cesarasdf/iwvg-devops-cesar-cruz?color=informational)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/cesarasdf/iwvg-devops-cesar-cruz)
+![GitHub issues](https://img.shields.io/github/issues/cesarasdf/iwvg-devops-cesar-cruz?color=important)
+![GitHub closed issues](https://img.shields.io/github/issues-closed/cesarasdf/iwvg-devops-cesar-cruz?color=informational)
 
 ### Estado del código
 [![CI](https://github.com/cesarasdf/iwvg-devops-cesar-cruz/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/cesarasdf/iwvg-devops-cesar-cruz/actions/workflows/continuous-integration.yml)
@@ -23,7 +23,7 @@
 1. Clonar el repositorio en tu equipo, **mediante consola**:
 ```sh
 cd <folder path>
-git clone https://github.com/miw-upm/iwvg-devops
+git clone https://github.com/cesarasdf/iwvg-devops-cesar-cruz
 ```
 2. Importar el proyecto mediante **IntelliJ IDEA**  
    * **Open**, y seleccionar la carpeta del proyecto.

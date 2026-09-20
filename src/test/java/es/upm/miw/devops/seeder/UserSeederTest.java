@@ -1,8 +1,8 @@
 package es.upm.miw.devops.seeder;
 
-import es.upm.miw.devops.code.Role;
-import es.upm.miw.devops.code.User;
-import es.upm.miw.devops.code.UserRepository;
+import es.upm.miw.devops.model.Role;
+import es.upm.miw.devops.model.User;
+import es.upm.miw.devops.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
